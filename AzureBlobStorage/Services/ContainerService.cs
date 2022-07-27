@@ -15,7 +15,7 @@ namespace AzureBlobStorage.Services
         public async Task CreateContainer(string containerName)
         {
             BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-            await blobContainerClient.CreateIfNotExistsAsync();
+            await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.BlobContainer);
         }
 
         public async Task DeleteContainer(string containerName)

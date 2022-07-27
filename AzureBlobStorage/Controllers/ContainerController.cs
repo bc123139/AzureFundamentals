@@ -1,4 +1,5 @@
-﻿using AzureBlobStorage.Services;
+﻿using AzureBlobStorage.Models;
+using AzureBlobStorage.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AzureBlobStorage.Controllers
@@ -15,6 +16,25 @@ namespace AzureBlobStorage.Controllers
         {
             var containers = await _containerService.GetAllContainer();
             return View(containers);
+        }
+
+        public async Task<IActionResult> Delete(string containerName)
+        {
+            await _containerService.DeleteContainer(containerName);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public  IActionResult Create()
+        {
+            return View(new Container());
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Container container)
+        {
+            await _containerService.CreateContainer(container.Name);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
