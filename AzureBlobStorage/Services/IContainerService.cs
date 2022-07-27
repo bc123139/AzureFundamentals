@@ -4,7 +4,7 @@
     {
         Task<List<string>> GetAllContainersAndBlobs();
         Task<List<string>> GetAllContainer();
-        Task CreateContainer();
-        Task DeleteContainer();
+        Task CreateContainer(string containerName);
+        Task DeleteContainer(string containerName);
     }
 }
