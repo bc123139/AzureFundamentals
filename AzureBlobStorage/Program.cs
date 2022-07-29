@@ -9,6 +9,7 @@ builder.Services.AddSingleton(x => new BlobServiceClient(
     ));
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<IContainerService, ContainerService>();
+builder.Services.AddSingleton<IBlobService, BlobService>();
 
 var app = builder.Build();
 
