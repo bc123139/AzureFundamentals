@@ -34,5 +34,16 @@ namespace AzureBlobStorage.Controllers
             var result = await _blobService.UploadBlob(fileName, file, containerName);
             return RedirectToAction(nameof(Index), "Container");
         }
+
+        public async Task<ActionResult> ViewFile(string name, string containerName)
+        {
+            return Redirect(await _blobService.GetBlob(name, containerName));
+        }
+
+        public async Task<ActionResult> DeleteFile(string name, string containerName)
+        {
+            await _blobService.DeleteBlob(name, containerName);
+            return RedirectToAction(nameof(Index), "Home");
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace AzureBlobStorage.Services
             _blobServiceClient = blobServiceClient;
         }
 
-        public async Task DeleteContainer(string name, string containerName)
+        public async Task DeleteBlob(string name, string containerName)
         {
             BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = blobContainerClient.GetBlobClient(name);
