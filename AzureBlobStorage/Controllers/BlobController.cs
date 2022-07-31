@@ -18,5 +18,21 @@ namespace AzureBlobStorage.Controllers
             var blobObjs =await _blobService.GetAllBlobs(containerName);
             return View(blobObjs);
         }
+
+        [HttpGet]
+        public ActionResult AddFile(string containerName)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddFile(string containerName,IFormFile file)
+        {
+            if(file == null || file.Length<1)
+            return View();
+            var fileName=Path.GetFileNameWithoutExtension(file.Name)+"_"+Guid.NewGuid()+Path.GetExtension(file.FileName);
+            var result = await _blobService.UploadBlob(fileName, file, containerName);
+            return RedirectToAction(nameof(Index), "Container");
+        }
     }
 }
