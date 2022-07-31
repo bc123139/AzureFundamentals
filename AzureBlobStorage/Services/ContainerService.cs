@@ -34,9 +34,22 @@ namespace AzureBlobStorage.Services
             return containerNames;
         }
 
-        public Task<List<string>> GetAllContainersAndBlobs()
+        public async Task<List<string>> GetAllContainersAndBlobs()
         {
-            throw new NotImplementedException();
+            List<string> containerAndBlobNames = new();
+            containerAndBlobNames.Add("Account Name : " + _blobServiceClient.AccountName);
+            containerAndBlobNames.Add("------------------------------------------------------------------------------------------------------------");
+            await foreach (BlobContainerItem blobContainerItem in _blobServiceClient.GetBlobContainersAsync())
+            {
+                containerAndBlobNames.Add("--" + blobContainerItem.Name);
+                BlobContainerClient _blobContainer = _blobServiceClient.GetBlobContainerClient(blobContainerItem.Name);
+                await foreach (BlobItem blobItem in _blobContainer.GetBlobsAsync())
+                {
+                    containerAndBlobNames.Add("------" + blobItem.Name);
+                }
+                containerAndBlobNames.Add("------------------------------------------------------------------------------------------------------------");
+            }
+                return containerAndBlobNames;
         }
     }
 }
