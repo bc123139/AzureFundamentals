@@ -52,6 +52,8 @@ namespace AzureBlobStorage.Services
             metaData.Add("title", blob.Title);
             metaData.Add("comment",blob.Comment);
             var result = await blobClient.UploadAsync(file.OpenReadStream(), httpHeaders,metaData);
+            metaData.Remove("title");
+            await blobClient.SetMetadataAsync(metaData);
             if (result!=null) return true;
             return false;
         }

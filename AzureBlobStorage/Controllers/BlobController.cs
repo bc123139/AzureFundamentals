@@ -31,7 +31,7 @@ namespace AzureBlobStorage.Controllers
         {
             if(file == null || file.Length<1)
             return View();
-            var fileName=Path.GetFileNameWithoutExtension(file.Name)+"_"+Guid.NewGuid()+Path.GetExtension(file.FileName);
+            var fileName = Path.GetFileNameWithoutExtension(file.FileName) + "_" + Guid.NewGuid() + Path.GetExtension(file.FileName);
             var result = await _blobService.UploadBlob(fileName, file, containerName,blob);
             return RedirectToAction(nameof(Index), "Container");
         }
