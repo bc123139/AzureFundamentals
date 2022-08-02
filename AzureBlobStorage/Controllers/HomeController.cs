@@ -9,11 +9,13 @@ namespace AzureBlobStorage.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IContainerService _containerService;
+        private readonly IBlobService _blobService;
 
-        public HomeController(ILogger<HomeController> logger, IContainerService containerService)
+        public HomeController(ILogger<HomeController> logger, IContainerService containerService, IBlobService blobService)
         {
             _logger = logger;
             _containerService = containerService;
+            _blobService = blobService;
         }
 
         public async Task<IActionResult> Index()
@@ -21,9 +23,9 @@ namespace AzureBlobStorage.Controllers
             return View(await _containerService.GetAllContainersAndBlobs());
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Images()
         {
-            return View();
+            return View(await _blobService.GetAllBlobsWithUri("private-container"));
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

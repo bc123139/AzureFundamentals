@@ -42,7 +42,7 @@ namespace AzureBlobStorage.Services
                 var blobClient=blobContainerClient.GetBlobClient(item.Name);
                 Blob individualBlob = new Blob
                 {
-                    Title = blobClient.Uri.AbsoluteUri,
+                    Uri = blobClient.Uri.AbsoluteUri,
 
                 };
                 BlobProperties blobProperties = await blobClient.GetPropertiesAsync();
