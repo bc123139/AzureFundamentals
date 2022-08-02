@@ -39,29 +39,44 @@ namespace AzureBlobStorage.Services
             BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             var blobs = blobContainerClient.GetBlobsAsync();
             var blobList = new List<Blob>();
+            string sasContainerSignature = "";
+
+            if (blobContainerClient.CanGenerateSasUri)
+            {
+                BlobSasBuilder sasBuilder = new()
+                {
+                    BlobContainerName = blobContainerClient.Name,
+                    Resource = "c",
+                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                };
+
+                sasBuilder.SetPermissions(BlobSasPermissions.Read);
+
+                sasContainerSignature = blobContainerClient.GenerateSasUri(sasBuilder).AbsoluteUri.Split('?')[1].ToString();
+            }
             await foreach (var item in blobs)
             {
                 var blobClient=blobContainerClient.GetBlobClient(item.Name);
                 Blob individualBlob = new Blob
                 {
-                    Uri = blobClient.Uri.AbsoluteUri,
+                    Uri = blobClient.Uri.AbsoluteUri + "?" + sasContainerSignature,
 
                 };
 
-                if (blobClient.CanGenerateSasUri)
-                {
-                    BlobSasBuilder sasBuilder = new()
-                    {
-                        BlobContainerName = blobClient.GetParentBlobContainerClient().Name,
-                        BlobName = blobClient.Name,
-                        Resource = "b",
-                        ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
-                    };
+                //if (blobClient.CanGenerateSasUri)
+                //{
+                //    BlobSasBuilder sasBuilder = new()
+                //    {
+                //        BlobContainerName = blobClient.GetParentBlobContainerClient().Name,
+                //        BlobName = blobClient.Name,
+                //        Resource = "b",
+                //        ExpiresOn = DateTimeOffset.UtcNow.AddHours(1)
+                //    };
 
-                    sasBuilder.SetPermissions(BlobSasPermissions.Read);
+                //    sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
-                    individualBlob.Uri = blobClient.GenerateSasUri(sasBuilder).AbsoluteUri;
-                }
+                //    individualBlob.Uri = blobClient.GenerateSasUri(sasBuilder).AbsoluteUri;
+                //}
 
                 BlobProperties blobProperties = await blobClient.GetPropertiesAsync();
                 if (blobProperties.Metadata.ContainsKey("title"))
