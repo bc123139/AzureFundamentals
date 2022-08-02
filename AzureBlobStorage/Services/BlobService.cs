@@ -32,6 +32,33 @@ namespace AzureBlobStorage.Services
             return blobsString;
         }
 
+        public async Task<List<Blob>> GetAllBlobsWithUri(string containerName)
+        {
+            BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            var blobs = blobContainerClient.GetBlobsAsync();
+            var blobList = new List<Blob>();
+            await foreach (var item in blobs)
+            {
+                var blobClient=blobContainerClient.GetBlobClient(item.Name);
+                Blob individualBlob = new Blob
+                {
+                    Title = blobClient.Uri.AbsoluteUri,
+
+                };
+                BlobProperties blobProperties = await blobClient.GetPropertiesAsync();
+                if (blobProperties.Metadata.ContainsKey("title"))
+                {
+                    individualBlob.Title = blobProperties.Metadata["title"];
+                }
+                if (blobProperties.Metadata.ContainsKey("comment"))
+                {
+                    individualBlob.Title = blobProperties.Metadata["comment"];
+                }
+                blobList.Add(individualBlob);
+            }
+            return blobList;
+        }
+
         public async Task<string> GetBlob(string name, string containerName)
         {
             BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
