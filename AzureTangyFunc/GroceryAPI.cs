@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using AzureTangyFunc.Models;
 using AzureTangyFunc.Data;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace AzureTangyFunc
 {
@@ -39,6 +41,27 @@ namespace AzureTangyFunc
 
 
             return new OkObjectResult(groceryItem);
+        }
+
+        [FunctionName("GetGrocery")]
+        public async Task<IActionResult> GetGrocery(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GroceryList")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("Getting Grocery List Items.");
+            return new OkObjectResult(await _db.GroceryItems.ToListAsync());
+        }
+
+        [FunctionName("GetGroceryById")]
+        public async Task<IActionResult> GetGroceryById(
+           [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GroceryList/{id}")] HttpRequest req,
+           ILogger log, string id)
+        {
+            log.LogInformation("Getting Grocery List Items.");
+            var item = await _db.GroceryItems.FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null)
+                return new NotFoundResult();
+            return new OkObjectResult(item);
         }
     }
 }
