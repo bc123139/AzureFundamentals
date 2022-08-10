@@ -28,7 +28,8 @@ namespace AzureSpookyLogic.Controllers
             var jsonContent = JsonConvert.SerializeObject(spookyRequest);
             using (var content = new StringContent(jsonContent, Encoding.UTF8, "application/json"))
             {
-                HttpResponseMessage httpResponse = await client.PostAsync("Logic app url", content);
+                HttpResponseMessage httpResponse = await client
+                    .PostAsync("https://prod-04.centralus.logic.azure.com:443/workflows/f30160e50b8f4dd388ff488e42ba487a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TsPz1unGU1CBHRf5GjCWA4RKcrWB5Tel1aWCk71wXOA", content);
             }
 
            
