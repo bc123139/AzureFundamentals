@@ -1,4 +1,6 @@
-﻿using AzureSpookyLogic.Models;
+﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using AzureSpookyLogic.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;
@@ -10,10 +12,11 @@ namespace AzureSpookyLogic.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         static readonly HttpClient client = new HttpClient();
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly BlobServiceClient _blobServiceClient;
+        public HomeController(ILogger<HomeController> logger, BlobServiceClient blobServiceClient)
         {
             _logger = logger;
+            _blobServiceClient = blobServiceClient;
         }
 
         public IActionResult Index()
@@ -32,7 +35,20 @@ namespace AzureSpookyLogic.Controllers
                     .PostAsync("https://prod-04.centralus.logic.azure.com:443/workflows/f30160e50b8f4dd388ff488e42ba487a/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TsPz1unGU1CBHRf5GjCWA4RKcrWB5Tel1aWCk71wXOA", content);
             }
 
-           
+            if (file != null)
+            {
+                var fileName = spookyRequest.Id + Path.GetExtension(file.FileName);
+                BlobContainerClient blobContainerClient = _blobServiceClient.GetBlobContainerClient("logicappholder");
+                var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+                var httpHeaders = new BlobHttpHeaders()
+                {
+                    ContentType = file.ContentType
+                };
+                await blobClient.UploadAsync(file.OpenReadStream(), httpHeaders);
+            }
+
+
             return RedirectToAction(nameof(Index));
         }
 
